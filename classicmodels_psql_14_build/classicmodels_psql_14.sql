@@ -43,6 +43,16 @@ CREATE TABLE IF NOT EXISTS ClassicModels.Employees (
 	ON UPDATE NO ACTION
 );
 
+CREATE INDEX IF NOT EXISTS fk_Employees_Employees_idx ON ClassicModels.Employees
+(
+    reportsTo ASC
+);
+
+CREATE INDEX IF NOT EXISTS fk_Employees_Offices_idx ON ClassicModels.Employees
+(
+    officeCode ASC
+);
+
 -- -----------------------------------------------------
 -- Table {schema}.{table} ClassicModels.Customers
 -- -----------------------------------------------------
@@ -66,6 +76,11 @@ CREATE TABLE IF NOT EXISTS ClassicModels.Customers (
 	REFERENCES ClassicModels.Employees (employeeNumber)
 	ON DELETE NO ACTION
 	ON UPDATE NO ACTION
+);
+
+CREATE INDEX IF NOT EXISTS fk_Customers_Employees_idx ON ClassicModels.Customers
+(
+    salesRepEmployeeNumber ASC
 );
 
 -- -----------------------------------------------------
@@ -98,6 +113,10 @@ CREATE TABLE IF NOT EXISTS ClassicModels.Products (
 	ON UPDATE NO ACTION
 );
 
+CREATE INDEX IF NOT EXISTS fk_Products_ProductLines_idx ON ClassicModels.Products
+(
+    productLine ASC
+);
 
 -- -----------------------------------------------------
 -- Table {schema}.{table} ClassicModels.Orders
@@ -117,6 +136,10 @@ CREATE TABLE IF NOT EXISTS ClassicModels.Orders (
 	ON UPDATE NO ACTION
 );
 
+CREATE INDEX IF NOT EXISTS fk_Orders_Customers_idx ON ClassicModels.Orders
+(
+    customerNumber ASC
+);
 
 -- -----------------------------------------------------
 -- Table {schema}.{table} ClassicModels.OrderDetails
@@ -140,6 +163,16 @@ CREATE TABLE IF NOT EXISTS ClassicModels.OrderDetails (
 	ON UPDATE NO ACTION
 );
 
+CREATE INDEX IF NOT EXISTS fk_OrderDetails_Products_idx ON ClassicModels.OrderDetails
+(
+    productCode ASC
+);
+
+CREATE INDEX IF NOT EXISTS fk_OrderDetails_Orders_idx ON ClassicModels.OrderDetails
+(
+    orderNumber ASC
+);
+
 -- -----------------------------------------------------
 -- Table {schema}.{table} ClassicModels.Payments
 -- -----------------------------------------------------
@@ -155,6 +188,10 @@ CREATE TABLE IF NOT EXISTS ClassicModels.Payments (
 	ON UPDATE NO ACTION
 );
 
+CREATE INDEX IF NOT EXISTS fk_Payments_Customers_idx ON ClassicModels.Payments
+(
+    customerNumber ASC
+);
 
 -- ProductLines
 -- ------------------------------------------------------------
