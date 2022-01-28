@@ -105,32 +105,103 @@ FROM (
 		classicmodels.products) AS t;
 
 -- 1.12 How many distinct products does ClassicModels sell?
+SELECT
+	COUNT(DISTINCT(productcode)) AS n_distinct_productcode
+FROM
+	classicmodels.products;
 
-
--- 1.13 Report the name and city of customers who don't have sales representatives?
-
+-- 1.13 Report the name and city of customers who don't have sales representatives.
+SELECT
+	customername,
+	city
+FROM
+	classicmodels.customers
+WHERE
+	salesrepemployeenumber IS NULL;
 
 -- 1.14 What are the names of executives with VP or Manager in their title? Use the CONCAT function to combine the employee's first name and last name into a single field for reporting.
-
+SELECT
+	firstname || lastname AS employee_name
+FROM
+	classicmodels.employees
+WHERE
+	jobtitle ILIKE '%vp%'
+	OR jobtitle ILIKE '%manager%';
 
 -- 1.15 Which orders have a value greater than $5,000?
-
+WITH order_totals AS (
+	SELECT
+		ordernumber,
+		SUM(quantityordered * priceeach) AS order_total
+	FROM
+		classicmodels.orderdetails
+	GROUP BY
+		ordernumber
+)
+SELECT
+	*
+FROM
+	order_totals;
 
 -- 2. One to many relationship
 -- 2.1 Report the account representative for each customer.
-
+SELECT
+	cust.customernumber,
+	cust.customername,
+	empl.employeenumber AS account_rep_empl_number,
+	TRIM(CONCAT(empl.firstname, ' ', empl.lastname)) AS account_rep_name,
+	empl.officecode AS account_rep_office
+FROM
+	classicmodels.customers AS cust
+	LEFT JOIN classicmodels.employees AS empl ON cust.salesrepemployeenumber = empl.employeenumber ORDER BY customernumber ASC;
 
 -- 2.2 Report total payments for Atelier graphique.
-
+SELECT
+	cust.customername,
+	cust.customernumber,
+	SUM(paym.amount) AS total
+FROM
+	classicmodels.customers AS cust
+	INNER JOIN classicmodels.payments AS paym ON cust.customernumber = paym.customernumber
+WHERE
+	cust.customername = 'Atelier graphique'
+GROUP BY
+	1,
+	2;
 
 -- 2.3 Report the total payments by date
-
+SELECT
+	DATE_TRUNC('day', paymentdate)::DATE AS paymentdate_day,
+	SUM(amount) AS total_payment_amount
+FROM
+	classicmodels.payments
+GROUP BY
+	paymentdate_day
+ORDER BY
+	paymentdate_day ASC;
 
 -- 2.4 Report the products that have not been sold.
-
+SELECT
+	prod.productcode,
+	orderd.ordernumber
+FROM
+	classicmodels.products AS prod
+	LEFT JOIN classicmodels.orderdetails AS orderd ON prod.productcode = orderd.productcode
+WHERE orderd.ordernumber IS NULL;
 
 -- 2.5 List the amount paid by each customer.
-
+SELECT
+	cust.customernumber AS cust_number,
+	cust.customername,
+	ROUND(SUM(paym.amount)):: AS total_cust_payment
+FROM
+	classicmodels.customers AS cust
+	LEFT JOIN classicmodels.payments AS paym ON cust.customernumber = paym.customernumber
+GROUP BY
+	cust.customernumber,
+	cust.customername
+ORDER BY
+	total_cust_payment DESC NULLS LAST;
 
 -- 2.6 How many orders have been placed by Herkku Gifts?
 
