@@ -1,18 +1,36 @@
 -- 1. Single entity
 -- 1.1 Prepare a list of offices sorted by country, state, city.
-
+SELECT
+    *
+FROM classicmodels.offices
+ORDER BY
+    country ASC,
+    state ASC,
+    city ASC;
 
 -- 1.2 How many employees are there in the company?
-
+SELECT
+    COUNT(employeenumber) AS n_employees
+FROM classicmodels.employees;
 
 -- 1.3 What is the total of payments received?
-
+SELECT
+    SUM(amount) AS total_payments_received
+FROM classicmodels.payments;
 
 -- 1.4 List the product lines that contain 'Cars'.
-
+SELECT
+    *
+FROM classicmodels.productlines
+WHERE productline ILIKE '%_car_%';
 
 -- 1.5 Report total payments for October 28, 2004.
-
+SELECT
+    paymentdate::DATE,
+    SUM(amount) AS total_payments_received_20041028
+FROM classicmodels.payments
+WHERE paymentdate::DATE = '2004-10-28'
+GROUP BY paymentdate;
 
 -- 1.6 Report those payments greater than $100,000.
 
