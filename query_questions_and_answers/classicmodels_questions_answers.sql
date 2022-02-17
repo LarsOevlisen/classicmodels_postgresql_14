@@ -3,7 +3,7 @@
 
 SELECT
 	*
-FROM
+FROM	
 	classicmodels.offices
 ORDER BY
 	country ASC,
@@ -204,7 +204,13 @@ ORDER BY
 	total_cust_payment DESC NULLS LAST;
 
 -- 2.6 How many orders have been placed by Herkku Gifts?
-
+SELECT
+	COUNT(orders.ordernumber)
+FROM classicmodels.orders orders
+INNER JOIN classicmodels.customers customers
+ON
+	orders.customernumber = customers.customernumber
+	AND customers.customername = 'Herkku Gifts';
 
 -- 2.7 Who are the employees in Boston?
 
