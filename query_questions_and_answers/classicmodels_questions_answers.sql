@@ -6,9 +6,10 @@ SELECT
 FROM	
 	classicmodels.offices
 ORDER BY
-	country ASC,
-	state ASC,
-	city ASC;
+	country ASC NULLS LAST,
+	state ASC NULLS LAST,
+	city ASC NULLS LAST;
+
 -- 1.2 How many employees are there in the company?
 SELECT
 	COUNT(employeenumber) AS n_employees
