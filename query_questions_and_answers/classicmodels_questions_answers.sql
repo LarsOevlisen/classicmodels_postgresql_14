@@ -1,3 +1,4 @@
+--------- Questions and answers - Start ---------
 -- 1. Single entity
 -- 1.1 Prepare a list of offices sorted by country, state, city.
 
@@ -172,19 +173,18 @@ GROUP BY
 
 -- 2.3 Report the total payments by date
 SELECT
-	DATE_TRUNC('day', paymentdate)::DATE AS paymentdate_day,
+	paymentdate::DATE,
 	SUM(amount) AS total_payment_amount
-FROM
-	classicmodels.payments
+FROM classicmodels.payments
 GROUP BY
-	paymentdate_day
+	paymentdate
 ORDER BY
-	paymentdate_day ASC;
+	paymentdate ASC;
 
 -- 2.4 Report the products that have not been sold.
 SELECT
-	prod.productcode,
-	orderd.ordernumber
+	orderd.ordernumber,
+	prod.*
 FROM
 	classicmodels.products AS prod
 	LEFT JOIN classicmodels.orderdetails AS orderd ON prod.productcode = orderd.productcode
@@ -192,42 +192,103 @@ WHERE orderd.ordernumber IS NULL;
 
 -- 2.5 List the amount paid by each customer.
 SELECT
-	cust.customernumber AS cust_number,
-	cust.customername,
-	ROUND(SUM(paym.amount)):: AS total_cust_payment
+	customers.customernumber AS cust_number,
+	customers.customername,
+	ROUND(SUM(payments.amount)) AS total_cust_payment_rounded
 FROM
-	classicmodels.customers AS cust
-	LEFT JOIN classicmodels.payments AS paym ON cust.customernumber = paym.customernumber
+	classicmodels.customers AS customers
+	LEFT JOIN classicmodels.payments AS payments ON customers.customernumber = payments.customernumber
 GROUP BY
-	cust.customernumber,
-	cust.customername
+	customers.customernumber,
+	customers.customername
 ORDER BY
-	total_cust_payment DESC NULLS LAST;
+	total_cust_payment_rounded DESC NULLS LAST;
 
 -- 2.6 How many orders have been placed by Herkku Gifts?
 SELECT
+	customers.customername,
 	COUNT(orders.ordernumber)
-FROM classicmodels.orders orders
-INNER JOIN classicmodels.customers customers
+FROM classicmodels.orders AS orders
+INNER JOIN classicmodels.customers AS customers
 ON
 	orders.customernumber = customers.customernumber
-	AND customers.customername = 'Herkku Gifts';
+	AND customers.customername = 'Herkku Gifts'
+GROUP BY customers.customername;
 
 -- 2.7 Who are the employees in Boston?
-
+SELECT
+	*
+FROM classicmodels.employees AS employees
+INNER JOIN classicmodels.offices AS offices
+ON
+	employees.officecode = offices.officecode
+	AND offices.city = 'Boston';
 
 -- 2.8 Report those payments greater than $100,000. Sort the report so the customer who made the highest payment appears first.
-
+SELECT
+	payments.*,
+	customers.customernumber,
+	customers.customername
+FROM classicmodels.payments AS payments
+INNER JOIN classicmodels.customers AS customers
+ON
+	payments.customernumber = customers.customernumber
+	AND payments.amount > 100000
+ORDER BY amount DESC;
 
 -- 2.9 List the value of 'On Hold' orders.
-
+SELECT
+	orders.status,
+	SUM(quantityordered * priceeach) AS order_value
+FROM classicmodels.orderdetails AS orderdetails
+INNER JOIN classicmodels.orders AS orders
+ON
+	orderdetails.ordernumber = orders.ordernumber
+GROUP BY status;
 
 -- 2.10 Report the number of orders 'On Hold' for each customer.
+SELECT
+	customers.customernumber,
+	customers.customername,
+	orders.status,
+	COUNT(orders.ordernumber)
+FROM classicmodels.customers AS customers
+INNER JOIN classicmodels.orders AS orders
+ON
+	customers.customernumber = orders.customernumber
+	AND orders.status = 'On Hold'
+GROUP BY
+	customers.customernumber,
+	customers.customername,
+	orders.status
+ORDER BY customernumber ASC;
+
+SELECT -- Alternative solution utilising COALESCE to force status to 'On Hold' for all left joined order rows where status was not 'On Hold' (counted as 0 'On Hold' since they are not present in orders table)
+	customers.customernumber,
+	customers.customername,
+	COALESCE(orders.status, 'On Hold') AS status,
+	COUNT(orders.ordernumber) AS n_status_on_hold
+FROM classicmodels.customers AS customers
+LEFT JOIN classicmodels.orders AS orders
+ON
+	customers.customernumber = orders.customernumber
+	AND orders.status = 'On Hold'
+GROUP BY
+	customers.customernumber,
+	customers.customername,
+	orders.status
+ORDER BY n_status_on_hold DESC;
 
 
 -- 3. Many to many relationship
 -- 3.1 List products sold by order date.
-
+SELECT
+	orders.orderdate,
+	products.productname
+FROM classicmodels.orders AS orders
+INNER JOIN classicmodels.orderdetails AS orderdetails ON orders.ordernumber = orderdetails.ordernumber
+INNER JOIN classicmodels.products AS products ON orderdetails.productcode = products.productcode
+ORDER BY orders.orderdate ASC;
 
 -- 3.2 List the order dates in descending order for orders for the 1940 Ford Pickup Truck.
 
@@ -421,3 +482,4 @@ ON
 
 
 -- 8.5 Create a parallel coordinates plot for product scale, quantity in stock, and MSRP in the Products table.
+--------- Questions and answers - End ---------
