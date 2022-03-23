@@ -291,14 +291,62 @@ INNER JOIN classicmodels.products AS products ON orderdetails.productcode = prod
 ORDER BY orders.orderdate ASC;
 
 -- 3.2 List the order dates in descending order for orders for the 1940 Ford Pickup Truck.
+SELECT
+	DISTINCT(orders.orderdate) AS distinct_orderdates
+FROM classicmodels.orders
+INNER JOIN classicmodels.orderdetails AS orderdetails
+ON orders.ordernumber = orderdetails.ordernumber
 
+INNER JOIN classicmodels.products AS products
+ON
+	orderdetails.productcode = products.productcode
+	AND products.productname = '1940 Ford Pickup Truck'
+ORDER BY orders.orderdate DESC;
 
 -- 3.3 List the names of customers and their corresponding order number where a particular order from that customer has a value greater than $25,000?
+WITH order_value AS (
+	SELECT
+		ordernumber,
+		SUM((quantityordered * priceeach)) AS total_order_value
+	FROM classicmodels.orderdetails
+	GROUP BY ordernumber
+)
 
+SELECT
+	customers.customernumber,
+	customers.customername,
+	orders.ordernumber,
+	order_value.total_order_value
+FROM classicmodels.customers AS customers
+INNER JOIN classicmodels.orders AS orders
+ON customers.customernumber = orders.customernumber
+INNER JOIN order_value
+ON
+	orders.ordernumber = order_value.ordernumber
+	AND order_value.total_order_value > 25000
+ORDER BY
+	customernumber ASC,
+	total_order_value DESC;
 
 -- 3.4 Are there any products that appear on all orders?
+WITH distinct_products AS (
+	-- Get the distinct products in the product catalogue (not from orderdetails, since there might be products that haven't been ordered)
+	SELECT DISTINCT productcode AS distinct_productcodes
+	FROM classicmodels.products
+)
 
+SELECT
+	*
+FROM distinct_products
+LEFT JOIN classicmodels.
+;
 
+SELECT
+	*
+FROM classicmodels.orders AS orders
+INNER JOIN classicmodels.orderdetails AS orderdetails
+ON orders.ordernumber = orderdetails.ordernumber
+;
 -- 3.5 List the names of products sold at less than 80% of the MSRP.
 
 
