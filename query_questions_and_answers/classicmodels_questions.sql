@@ -2,351 +2,89 @@
 -- 1. Single entity
 -- 1.1 Prepare a list of offices sorted by country, state, city.
 
-SELECT
-	*
-FROM	
-	classicmodels.offices
-ORDER BY
-	country ASC NULLS LAST,
-	state ASC NULLS LAST,
-	city ASC NULLS LAST;
 
 -- 1.2 How many employees are there in the company?
-SELECT
-	COUNT(employeenumber) AS n_employees
-FROM
-	classicmodels.employees;
+
 
 -- 1.3 What is the total of payments received?
-SELECT
-	SUM(amount) AS total_payments_received
-FROM
-	classicmodels.payments;
 
 -- 1.4 List the product lines that contain 'Cars'.
-SELECT
-	*
-FROM
-	classicmodels.productlines
-WHERE
-	productline ILIKE '%_car_%';
+
 
 -- 1.5 Report total payments for October 28, 2004.
-SELECT
-	paymentdate::DATE,
-	SUM(amount) AS total_payments_received_20041028
-FROM
-	classicmodels.payments
-WHERE
-	paymentdate::DATE = '2004-10-28'
-GROUP BY
-	paymentdate;
+
 
 -- 1.6 Report those payments greater than $100,000.
-SELECT
-	*
-FROM
-	classicmodels.payments
-WHERE
-	amount > 100000
-ORDER BY
-	amount DESC;
+
 
 -- 1.7 List the products in each product line.
-SELECT
-	productline,
-	productcode
-FROM
-	classicmodels.products
-ORDER BY
-	productline;
+
 
 -- 1.8 How many products in each product line?
-SELECT
-	productline,
-	COUNT(productcode) AS n_productcode
-FROM
-	classicmodels.products
-GROUP BY
-	productline
-ORDER BY
-	n_productcode DESC;
+
 
 -- 1.9 What is the minimum payment received?
-SELECT
-	*
-FROM (
-	SELECT
-		*,
-		MIN(amount) OVER () AS min_amount
-	FROM
-		classicmodels.payments) AS t
-WHERE
-	amount = min_amount;
+
 
 -- 1.10 List all payments greater than twice the average payment.
-SELECT
-	*
-FROM (
-	SELECT
-		*,
-		2 * AVG(amount) OVER () AS avg_amount
-	FROM
-		classicmodels.payments) AS t
-WHERE
-	amount > avg_amount;;
+
 
 -- 1.11 What is the average percentage markup of the MSRP on buyPrice?
-SELECT
-	100 * AVG(avg_msrp / avg_buyprice) AS average_pct_markup_msrp_buyprice
-FROM (
-	SELECT
-		AVG(msrp) AS avg_msrp,
-		AVG(buyprice) AS avg_buyprice
-	FROM
-		classicmodels.products) AS t;
+
 
 -- 1.12 How many distinct products does ClassicModels sell?
-SELECT
-	COUNT(DISTINCT(productcode)) AS n_distinct_productcode
-FROM
-	classicmodels.products;
+
 
 -- 1.13 Report the name and city of customers who don't have sales representatives.
-SELECT
-	customername,
-	city
-FROM
-	classicmodels.customers
-WHERE
-	salesrepemployeenumber IS NULL;
+
 
 -- 1.14 What are the names of executives with VP or Manager in their title? Use the CONCAT function to combine the employee's first name and last name into a single field for reporting.
-SELECT
-	firstname || lastname AS employee_name
-FROM
-	classicmodels.employees
-WHERE
-	jobtitle ILIKE '%vp%'
-	OR jobtitle ILIKE '%manager%';
+
 
 -- 1.15 Which orders have a value greater than $5,000?
-WITH order_totals AS (
-	SELECT
-		ordernumber,
-		SUM(quantityordered * priceeach) AS order_total
-	FROM
-		classicmodels.orderdetails
-	GROUP BY
-		ordernumber
-)
-SELECT
-	*
-FROM
-	order_totals;
+
 
 -- 2. One to many relationship
 -- 2.1 Report the account representative for each customer.
-SELECT
-	cust.customernumber,
-	cust.customername,
-	empl.employeenumber AS account_rep_empl_number,
-	TRIM(CONCAT(empl.firstname, ' ', empl.lastname)) AS account_rep_name,
-	empl.officecode AS account_rep_office
-FROM
-	classicmodels.customers AS cust
-	LEFT JOIN classicmodels.employees AS empl ON cust.salesrepemployeenumber = empl.employeenumber ORDER BY customernumber ASC;
+
 
 -- 2.2 Report total payments for Atelier graphique.
-SELECT
-	cust.customername,
-	cust.customernumber,
-	SUM(paym.amount) AS total
-FROM
-	classicmodels.customers AS cust
-	INNER JOIN classicmodels.payments AS paym ON cust.customernumber = paym.customernumber
-WHERE
-	cust.customername = 'Atelier graphique'
-GROUP BY
-	1,
-	2;
+
 
 -- 2.3 Report the total payments by date
-SELECT
-	paymentdate::DATE,
-	SUM(amount) AS total_payment_amount
-FROM classicmodels.payments
-GROUP BY
-	paymentdate
-ORDER BY
-	paymentdate ASC;
+
 
 -- 2.4 Report the products that have not been sold.
-SELECT
-	orderd.ordernumber,
-	prod.*
-FROM
-	classicmodels.products AS prod
-	LEFT JOIN classicmodels.orderdetails AS orderd ON prod.productcode = orderd.productcode
-WHERE orderd.ordernumber IS NULL;
+
 
 -- 2.5 List the amount paid by each customer.
-SELECT
-	customers.customernumber AS cust_number,
-	customers.customername,
-	ROUND(SUM(payments.amount)) AS total_cust_payment_rounded
-FROM
-	classicmodels.customers AS customers
-	LEFT JOIN classicmodels.payments AS payments ON customers.customernumber = payments.customernumber
-GROUP BY
-	customers.customernumber,
-	customers.customername
-ORDER BY
-	total_cust_payment_rounded DESC NULLS LAST;
+
 
 -- 2.6 How many orders have been placed by Herkku Gifts?
-SELECT
-	customers.customername,
-	COUNT(orders.ordernumber)
-FROM classicmodels.orders AS orders
-INNER JOIN classicmodels.customers AS customers
-ON
-	orders.customernumber = customers.customernumber
-	AND customers.customername = 'Herkku Gifts'
-GROUP BY customers.customername;
+
 
 -- 2.7 Who are the employees in Boston?
-SELECT
-	*
-FROM classicmodels.employees AS employees
-INNER JOIN classicmodels.offices AS offices
-ON
-	employees.officecode = offices.officecode
-	AND offices.city = 'Boston';
+
 
 -- 2.8 Report those payments greater than $100,000. Sort the report so the customer who made the highest payment appears first.
-SELECT
-	payments.*,
-	customers.customernumber,
-	customers.customername
-FROM classicmodels.payments AS payments
-INNER JOIN classicmodels.customers AS customers
-ON
-	payments.customernumber = customers.customernumber
-	AND payments.amount > 100000
-ORDER BY amount DESC;
+
 
 -- 2.9 List the value of 'On Hold' orders.
-SELECT
-	orders.status,
-	SUM(quantityordered * priceeach) AS order_value
-FROM classicmodels.orderdetails AS orderdetails
-INNER JOIN classicmodels.orders AS orders
-ON
-	orderdetails.ordernumber = orders.ordernumber
-GROUP BY status;
+
 
 -- 2.10 Report the number of orders 'On Hold' for each customer.
-SELECT
-	customers.customernumber,
-	customers.customername,
-	orders.status,
-	COUNT(orders.ordernumber)
-FROM classicmodels.customers AS customers
-INNER JOIN classicmodels.orders AS orders
-ON
-	customers.customernumber = orders.customernumber
-	AND orders.status = 'On Hold'
-GROUP BY
-	customers.customernumber,
-	customers.customername,
-	orders.status
-ORDER BY customernumber ASC;
-
-SELECT -- Alternative solution utilising COALESCE to force status to 'On Hold' for all left joined order rows where status was not 'On Hold' (counted as 0 'On Hold' since they are not present in orders table)
-	customers.customernumber,
-	customers.customername,
-	COALESCE(orders.status, 'On Hold') AS status,
-	COUNT(orders.ordernumber) AS n_status_on_hold
-FROM classicmodels.customers AS customers
-LEFT JOIN classicmodels.orders AS orders
-ON
-	customers.customernumber = orders.customernumber
-	AND orders.status = 'On Hold'
-GROUP BY
-	customers.customernumber,
-	customers.customername,
-	orders.status
-ORDER BY n_status_on_hold DESC;
 
 
 -- 3. Many to many relationship
 -- 3.1 List products sold by order date.
-SELECT
-	orders.orderdate,
-	products.productname
-FROM classicmodels.orders AS orders
-INNER JOIN classicmodels.orderdetails AS orderdetails ON orders.ordernumber = orderdetails.ordernumber
-INNER JOIN classicmodels.products AS products ON orderdetails.productcode = products.productcode
-ORDER BY orders.orderdate ASC;
 
--- 3.2 List the order dates in descending order for orders for the 1940 Ford Pickup Truck.
-SELECT
-	DISTINCT(orders.orderdate) AS distinct_orderdates
-FROM classicmodels.orders
-INNER JOIN classicmodels.orderdetails AS orderdetails
-ON orders.ordernumber = orderdetails.ordernumber
-
-INNER JOIN classicmodels.products AS products
-ON
-	orderdetails.productcode = products.productcode
-	AND products.productname = '1940 Ford Pickup Truck'
-ORDER BY orders.orderdate DESC;
 
 -- 3.3 List the names of customers and their corresponding order number where a particular order from that customer has a value greater than $25,000?
-WITH order_value AS (
-	SELECT
-		ordernumber,
-		SUM((quantityordered * priceeach)) AS total_order_value
-	FROM classicmodels.orderdetails
-	GROUP BY ordernumber
-)
 
-SELECT
-	customers.customernumber,
-	customers.customername,
-	orders.ordernumber,
-	order_value.total_order_value
-FROM classicmodels.customers AS customers
-INNER JOIN classicmodels.orders AS orders
-ON customers.customernumber = orders.customernumber
-INNER JOIN order_value
-ON
-	orders.ordernumber = order_value.ordernumber
-	AND order_value.total_order_value > 25000
-ORDER BY
-	customernumber ASC,
-	total_order_value DESC;
 
 -- 3.4 Are there any products that appear on all orders?
-WITH distinct_products AS (
-	-- Get the distinct products in the product catalogue (not from orderdetails, since there might be products that haven't been ordered)
-	SELECT DISTINCT productcode AS distinct_productcodes
-	FROM classicmodels.products
-)
 
-SELECT
-	*
-FROM distinct_products
-LEFT JOIN classicmodels.
-;
 
-SELECT
-	*
-FROM classicmodels.orders AS orders
-INNER JOIN classicmodels.orderdetails AS orderdetails
-ON orders.ordernumber = orderdetails.ordernumber
-;
 -- 3.5 List the names of products sold at less than 80% of the MSRP.
 
 
