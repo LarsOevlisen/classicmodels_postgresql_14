@@ -351,21 +351,45 @@ WITH count_orders_with_product AS (
 	GROUP BY productcode
 ),
 
-count_distinct_orders AS (
+total_n_orders AS (
 	-- Count the number of individual orders
-	SELECT COUNT(DISTINCT ordernumber) AS n_orders
+	SELECT COUNT(DISTINCT ordernumber) AS total_n_orders
 	FROM classicmodels.orderdetails
 )
 
--- For each product, left join the number of individual orders in order to determine if a product was present in all orders
+-- Return rows where the number of times a product was ordered equals the total number of orders 
 SELECT
 	*
-FROM count_orders_with_product AS product_count
-LEFT JOIN count_orders
-ON product_count.n_orders_with_product = count_orders.n_orders
-ORDER BY n_orders_with_product DESC;
--- 3.5 List the names of products sold at less than 80% of the MSRP.
+FROM count_orders_with_product
+INNER JOIN total_n_orders
+ON count_orders_with_product.n_orders_with_product = total_n_orders.total_n_orders
+ORDER BY productcode ASC;
 
+-- 3.5 List the names of products sold at less than 80% of the MSRP.
+WITH product_80_pct_msrp AS (
+	SELECT
+		products.productcode,
+		products.productname,
+		products.buyprice,
+		products.msrp,
+		(.8 * products.msrp)::NUMERIC AS msrp_80_pct
+	FROM classicmodels.products
+),
+
+distinct_product_price_orderlines AS (
+	-- This CTE pulls out the unique combinations of productcode / priceeach (a row per distinct price a product was sold at)
+	SELECT DISTINCT productcode, priceeach
+	FROM classicmodels.orderdetails
+)
+
+SELECT
+	product_80_pct_msrp.*
+FROM product_80_pct_msrp
+INNER JOIN distinct_product_price_orderlines
+ON
+	product_80_pct_msrp.productcode = distinct_product_price_orderlines.productcode
+	AND product_80_pct_msrp.msrp_80_pct > distinct_product_price_orderlines.priceeach
+;
 
 -- 3.6 Reports those products that have been sold with a markup of 100% or more (i.e.,  the priceEach is at least twice the buyPrice)
 
