@@ -391,7 +391,7 @@ ON
 	AND product_80_pct_msrp.msrp_80_pct > distinct_product_price_orderlines.priceeach
 ;
 
--- 3.6 Reports those products that have been sold with a markup of 100% or more (i.e.,  the priceEach is at least twice the buyPrice)
+-- 3.6 Report those products that have been sold with a markup of 100% or more (i.e.,  the priceEach is at least twice the buyPrice)
 
 
 -- 3.7 List the products ordered on a Monday.
