@@ -1,4 +1,4 @@
---------- Questions and answers - Start ---------
+--------- Questions - Start ---------
 -- 1. Single entity
 -- 1.1 Prepare a list of offices sorted by country, state, city.
 
@@ -268,4 +268,4 @@
 
 
 -- 8.5 Create a parallel coordinates plot for product scale, quantity in stock, and MSRP in the Products table.
---------- Questions and answers - End ---------
+--------- Questions - End ---------
