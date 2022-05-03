@@ -7,7 +7,7 @@ In order to create the database and load the data correctly, the following gener
 1. Download and install PostgreSQL 14 (earlier versions might very well also work, but I have only tested using v14)
 2. Since two tables will end up containing spatial information that is imported using a specific GIS function, PostGIS should be installed once PostgreSQL has been installed.
 
-### macOs
+### macOS
 If you are using macOS, an easy way to install PostgreSQL and PostGIS is to use postgresapp (https://postgresapp.com/). Once installed, log in to your local PostgreSQL installation using the `psql` terminal command and create a database with the name 'classicmodels'. While still logged into your PostgreSQL server, identify your recently created 'classicmodels' database in the list of databases by running the command `\l`. Exit `psql` by running the command `\q` and continue with the installation of PostGIS by running the following two commands in terminal:
 ```
 psql -d classicmodels -f /Applications/Postgres.app/Contents/Versions/latest/share/postgresql/contrib/postgis-3.1/postgis.sql
