@@ -376,19 +376,24 @@ WITH product_80_pct_msrp AS (
 	FROM classicmodels.products
 ),
 
-distinct_product_price_orderlines AS (
-	-- This CTE pulls out the unique combinations of productcode / priceeach (a row per distinct price a product was sold at)
-	SELECT DISTINCT productcode, priceeach
+minimum_product_sell_price AS (
+	-- Minimum price per product sold (the minimum price is sufficient when we only need to know whether or not the product had been sold at a price less than 80% of MSRP)
+	SELECT
+		productcode AS sold_productcode,
+		MIN(priceeach) AS minimum_sell_price
 	FROM classicmodels.orderdetails
+	GROUP BY 1
 )
 
 SELECT
-	product_80_pct_msrp.*
+	-- Return the set of products that have been sold at less than 80% of the MSRP price
+	product_80_pct_msrp.*,
+	minimum_product_sell_price.*
 FROM product_80_pct_msrp
-INNER JOIN distinct_product_price_orderlines
+INNER JOIN minimum_product_sell_price
 ON
-	product_80_pct_msrp.productcode = distinct_product_price_orderlines.productcode
-	AND product_80_pct_msrp.msrp_80_pct > distinct_product_price_orderlines.priceeach
+	product_80_pct_msrp.productcode = minimum_product_sell_price.sold_productcode
+	AND minimum_product_sell_price.minimum_sell_price < product_80_pct_msrp.msrp_80_pct
 ;
 
 -- 3.6 Report those products that have been sold with a markup of 100% or more (i.e.,  the priceEach is at least twice the buyPrice)
