@@ -1,7 +1,8 @@
 # ClassicModels Database
 Repository contains a PostgreSQL build script for the BIRT (https://eclipse.github.io/birt-website/docs/template-sample-database) sample database as well as exercises and answers for Richard Watson's ClassicModels SQL question bank (https://www.richardtwatson.com/open/Reader/ClassicModels.html). The ERD can be seen below:
 
-![This is an Entity Relationship Diagram]()
+![This is an Entity Relationship Diagram](https://user-images.githubusercontent.com/455401/168910840-b1f44e8d-5dda-445c-a321-9f9fa8303439.png)
+
 
 ## Requirements
 In order to create the database and load the data correctly, the following general steps should be undertaken before running the SQL build script:
