@@ -17,4 +17,4 @@ With the two PostGIS installations completed, run the SQL build script 'classicm
 ```
 psql -d classicmodels -a -q -f /classicmodels_postgresql_14/classicmodels_psql_14_build/classicmodels_psql_14.sql
 ```
-![This is an Entity Relationship Diagram](https://user-images.githubusercontent.com/455401/168910840-b1f44e8d-5dda-445c-a321-9f9fa8303439.png)
+![This is an Entity Relationship Diagram](https://user-images.githubusercontent.com/455401/168911221-9a77d3ae-e449-419d-870c-0baa5913b61b.png)
