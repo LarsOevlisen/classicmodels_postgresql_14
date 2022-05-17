@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS ClassicModels.Customers (
   postalCode VARCHAR(15),
   country VARCHAR(50) NOT NULL,
   salesRepEmployeeNumber INTEGER NULL,
-  creditLimit DOUBLE PRECISION,
+  creditLimit NUMERIC,
   customerLocation GEOMETRY NOT NULL,
   CONSTRAINT fk_fk_Customers_Employees
   	FOREIGN KEY (salesRepEmployeeNumber)
@@ -103,8 +103,8 @@ CREATE TABLE IF NOT EXISTS ClassicModels.Products (
   productVendor VARCHAR(50) NOT NULL,
   productDescription TEXT NOT NULL,
   quantityInStock SMALLINT NOT NULL,
-  buyPrice DOUBLE PRECISION NOT NULL,
-  MSRP DOUBLE PRECISION NOT NULL,
+  buyPrice NUMERIC NOT NULL,
+  MSRP NUMERIC NOT NULL,
   productLine VARCHAR(50) NULL,
   CONSTRAINT fk_Products_ProductLines
   	FOREIGN KEY (productLine)
@@ -148,7 +148,7 @@ CREATE TABLE IF NOT EXISTS ClassicModels.OrderDetails (
   orderNumber INTEGER NOT NULL,
   productCode VARCHAR(15) NOT NULL,
   quantityOrdered INTEGER NOT NULL,
-  priceEach DOUBLE PRECISION NOT NULL,
+  priceEach NUMERIC NOT NULL,
   orderLineNumber SMALLINT NOT NULL,
   PRIMARY KEY (productCode, orderNumber),
   CONSTRAINT fk_OrderDetails_Products
@@ -179,7 +179,7 @@ CREATE INDEX IF NOT EXISTS fk_OrderDetails_Orders_idx ON ClassicModels.OrderDeta
 CREATE TABLE IF NOT EXISTS ClassicModels.Payments (
   checkNumber VARCHAR(50) PRIMARY KEY,
   paymentDate TIMESTAMP NOT NULL,
-  amount DOUBLE PRECISION NOT NULL,
+  amount NUMERIC NOT NULL,
   customerNumber INTEGER NOT NULL,
   CONSTRAINT fk_Payments_Customers
   	FOREIGN KEY (customerNumber)
