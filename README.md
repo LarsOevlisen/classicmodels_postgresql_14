@@ -1,5 +1,5 @@
 # ClassicModels Database
-Repository contains SQL build script and solutions (PostgreSQL 14) to exercises for Richard Watson's ClassicModels tutorial database (https://www.richardtwatson.com/open/Reader/ClassicModels.html).
+Repository contains a PostgreSQL build script for the BIRT (https://eclipse.github.io/birt-website/docs/template-sample-database) sample database as well as exercises and answers for Richard Watson's ClassicModels SQL question bank (https://www.richardtwatson.com/open/Reader/ClassicModels.html).
 
 ## Requirements
 In order to create the database and load the data correctly, the following general steps should be undertaken before running the SQL build script:
